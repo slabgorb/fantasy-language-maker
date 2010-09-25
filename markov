@@ -1,0 +1,18 @@
+#!/usr/bin/python
+import markovchain
+from optparse import OptionParser
+
+
+parser = OptionParser()
+parser.add_option("-l", "--lookback", dest="lookback",
+                  help="number of characters to look back in the chain", metavar="LOOKBACK", default=2)
+parser.add_option("-d", "--dictionary", dest="dictionart",
+                  help="dictionary file to use", metavar="DICTIONARY", default='dictionary.txt')
+
+(options, args) = parser.parse_args()
+
+markovchain.MarkovChain(args, options.dictionary, options.lookback)
+
+
+
+
