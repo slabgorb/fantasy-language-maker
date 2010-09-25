@@ -1,22 +1,70 @@
 #!/usr/bin/python
+"""
+Markov chain generator for making fantasy names and other made-up words.
+"""
 import re
 import random
 import sys
+import collections
+
+class CharList(collections.defaultdict):
+    """models the list of characters in the histogram"""
+    def __init__(self):
+        """initializes the values to 0"""
+        collections.defaultdict.__init__(self, int)
+
+    def add(self, char):
+        """adds a character value to the character list """
+        self[char] += 1
+
+    def total(self):
+        """totals the values of a character list"""
+        return sum(self.values())
+
+    def choose(self):
+        """returns a random value based on a key"""
+        rnd = random.randrange(0, self.total())
+        position = 0
+        for char,count in self.items():
+            position += count
+            if rnd <= position:
+                return char
+
+class Histogram(collections.defaultdict):
+    """The histogram of letter probabilities."""
+    class START(object):pass
+    class END(object):pass
+    def __init__(self):
+        collections.defaultdict.__init__(self, CharList)
 
 
-class Markov:
+class Chain(collections.defaultdict):
+    """ """
     def __init__(self, corpus_files, dictionary_file, lookback = 2):
         """ initializes the Markov object. """
-        df = open('small_dict.txt','r')
+        df = open(dictionary_file, 'r')
         self.dictionary = df.readlines()
-        self.histogram = self.make_histogram(corpus_files, lookback)
-        self.words = self.make_words()
+        self.corpus_files = corpus_files
+        self.lookback = lookback
+
+    def load_corpuses(self):
+        """loads the corpuses"""
+        for file_path in self.corpus_files:
+            f = open(file_path,'r')
+            char = f.read(1)
+
+    def make_key(self):
+        """makes the keys for the histogram."""
+        key = []
+        for i in range(self.lookback):
+            key.push(Markov.START)
 
     def make_histogram(self, file_list, lookback = 2):
+        """makes the Markov histogram"""
         # the markov frequency histogram
         histogram = {}
         # pattern for matching characters
-        skip_pattern = re.compile("[\d]",re.UNICODE)
+        skip_pattern = re.compile("[\d\n]",re.UNICODE)
         eow_pattern = re.compile('^[ \.,\?!@#$%^&*\(\)\\\/\[\]"]', re.UNICODE)
         # load the files in the file list
         for file_path in file_list:
