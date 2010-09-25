@@ -2,16 +2,18 @@
 import markovchain
 from optparse import OptionParser
 
+usage = "markov [options] corpus1 corpus2 ..."
 
 parser = OptionParser()
 parser.add_option("-l", "--lookback", dest="lookback",
                   help="number of characters to look back in the chain", metavar="LOOKBACK", default=2)
-parser.add_option("-d", "--dictionary", dest="dictionart",
-                  help="dictionary file to use", metavar="DICTIONARY", default='dictionary.txt')
+parser.add_option("-d", "--dictionary", dest="dictionary",
+                  help="dictionary file to use", metavar="DICTIONARY", default='small_dict.txt')
 
 (options, args) = parser.parse_args()
 
-markovchain.MarkovChain(args, options.dictionary, options.lookback)
+m = markovchain.MarkovChain(args, options.dictionary, options.lookback)
+print m
 
 
 
