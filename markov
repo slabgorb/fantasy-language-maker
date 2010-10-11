@@ -12,7 +12,7 @@ parser.add_option("-d", "--dictionary", dest="dictionary",
 
 (options, args) = parser.parse_args()
 
-m = markovchain.MarkovChain(args, options.dictionary, options.lookback)
+m = markovchain.MarkovChain(args, options.dictionary, int(options.lookback))
 print m
 
 

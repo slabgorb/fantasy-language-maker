@@ -7,7 +7,6 @@ import sys
 import collections
 from optparse import OptionParser
 
-
 class CharList(collections.defaultdict):
     """Models the list of characters in the chain. The characters
     each have a corresponding int value, which is the proportion of
@@ -68,10 +67,12 @@ class MarkovChain(collections.defaultdict):
             lines = f.readlines()
             for line in lines:
                 for word in line.split():
-                    word = strip_punctuation(strip_digits(word)).lower()
+                    word = strip_chars(strip_chars(word, string.digits), string.punctuation).lower()
                     self.chain.add(word)
 
     def make_words(self):
+        """ runs through the dictionary and makes a fantasy word for
+        each entry in the 'real' dictionary """
         result = {}
         for w in self.dictionary:
             word = ""
@@ -82,6 +83,8 @@ class MarkovChain(collections.defaultdict):
         return result
 
     def __str__(self):
+        """ outputs the results of the corpuses applied to the
+        dictionary file"""
         output = ""
         keys = self.words.keys()
         keys.sort()
@@ -90,6 +93,7 @@ class MarkovChain(collections.defaultdict):
         return output
 
     def make_word(self):
+        """ makes a fantasy word from a series of random characters."""
         word = ""
         key = [Chain.START] * self.lookback
         while True:
@@ -100,8 +104,8 @@ class MarkovChain(collections.defaultdict):
             key.pop(0)
         return word
 
-def strip_punctuation(s):
-    return s.translate(string.maketrans("",""), string.punctuation)
-def strip_digits(s):
-    return s.translate(string.maketrans("",""), string.digits)
+
+def strip_chars(s, chars_to_strip = string.punctuation):
+    """ Strips a series of characters from a string."""
+    return s.translate(string.maketrans("",""), chars_to_strip)
 
