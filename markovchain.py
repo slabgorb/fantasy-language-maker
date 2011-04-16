@@ -109,3 +109,4 @@ def strip_chars(s, chars_to_strip = string.punctuation):
     """ Strips a series of characters from a string."""
     return s.translate(string.maketrans("",""), chars_to_strip)
 
+
