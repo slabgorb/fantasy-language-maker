@@ -15,5 +15,5 @@ parser.add_option("-d", "--dictionary", dest="dictionary",
 if (len(args) == 0):
   print usage
   exit()
-m = markovchain.MarkovChain(args, options.dictionary, int(options.lookback))
-print m
+print markovchain.MarkovChain(args, options.dictionary, int(options.lookback))
+
