@@ -3,7 +3,7 @@ Fantasy Language Maker
 
 Makes fantasy language glossaries based on markov chains applied to text corpuses. Comes with some sample corpuses from Project Gutenberg. (http://www.gutenberg.org/wiki/Main_Page)
 
-Requires an installation of the Python programming language
+Requires an installation of the Python programming language version 3
 http://www.python.org
 
 To run:
