@@ -7,6 +7,7 @@ import sys
 import collections
 from optparse import OptionParser
 from unicodedata import category
+import csv
 
 class CharList(collections.defaultdict):
     """Models the list of characters in the chain. The characters
@@ -87,9 +88,10 @@ class MarkovChain(collections.defaultdict):
         """ outputs the results of the corpuses applied to the
         dictionary file"""
         output = ""
-        keys = self.words.keys()
+        keys = list(self.words.keys())
+        keys.sort()
         for key in keys:
-            output += key + ((15 - len(key)) * ".") + self.words[key] + "\n"
+            output += key + "," + self.words[key] + "\n"
         return output
 
     def make_word(self):
