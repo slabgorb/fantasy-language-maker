@@ -1,4 +1,8 @@
-#!/usr/bin/python
+#!/usr/bin/python -S
+# -*- coding: utf-8 -*-
+import sys
+sys.setdefaultencoding("utf-8")
+import site
 import markovchain
 from optparse import OptionParser
 
@@ -16,4 +20,3 @@ if (len(args) == 0):
   print usage
   exit()
 print markovchain.MarkovChain(args, options.dictionary, int(options.lookback))
-
