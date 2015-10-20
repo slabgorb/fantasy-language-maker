@@ -13,3 +13,5 @@ From the command line, type './markov [options] <path to corpus> [path to additi
 
 on windows
 From the dos prompt, 'python markov [options] <path to corpus> [path to additional corpus..]'
+
+You can get additional corpora from Project Gutenberg - download the 'utf-8' version. I recommend removing the Gutenberg headers and footers before running the program on it.
