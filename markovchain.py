@@ -6,6 +6,7 @@ import random
 import sys
 import collections
 from optparse import OptionParser
+from unicodedata import category
 
 class CharList(collections.defaultdict):
     """Models the list of characters in the chain. The characters
@@ -67,8 +68,8 @@ class MarkovChain(collections.defaultdict):
             lines = f.readlines()
             for line in lines:
                 for word in line.split():
-                    word = strip_chars(strip_chars(word, string.digits), string.punctuation).lower()
-                    self.chain.add(word)
+                    word = ''.join(ch for ch in word if category(ch)[0] == 'L' )
+                    self.chain.add(word.lower())
 
     def make_words(self):
         """ runs through the dictionary and makes a fantasy word for
@@ -87,7 +88,6 @@ class MarkovChain(collections.defaultdict):
         dictionary file"""
         output = ""
         keys = self.words.keys()
-        keys.sort()
         for key in keys:
             output += key + ((15 - len(key)) * ".") + self.words[key] + "\n"
         return output
@@ -107,6 +107,4 @@ class MarkovChain(collections.defaultdict):
 
 def strip_chars(s, chars_to_strip = string.punctuation):
     """ Strips a series of characters from a string."""
-    return s.translate(string.maketrans("",""), chars_to_strip)
-
-
+    return s.translate(''.maketrans("",""), chars_to_strip)
