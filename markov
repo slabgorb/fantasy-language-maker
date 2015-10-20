@@ -1,8 +1,5 @@
-#!/usr/bin/python -S
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys
-sys.setdefaultencoding("utf-8")
-import site
 import markovchain
 from optparse import OptionParser
 
@@ -14,9 +11,8 @@ parser.add_option("-l", "--lookback", dest="lookback",
 parser.add_option("-d", "--dictionary", dest="dictionary",
                   help="dictionary file to use", metavar="DICTIONARY", default='small_dict.txt')
 
-
 (options, args) = parser.parse_args()
 if (len(args) == 0):
-  print usage
+  print(usage)
   exit()
-print markovchain.MarkovChain(args, options.dictionary, int(options.lookback))
+print(markovchain.MarkovChain(args, options.dictionary, int(options.lookback)))
