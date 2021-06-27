@@ -76,22 +76,12 @@ class MarkovChain(collections.defaultdict):
         """ runs through the dictionary and makes a fantasy word for
         each entry in the 'real' dictionary """
         result = {}
-        prefixIn = ""
-        prefixOut = ""
-        for w in sorted(self.dictionary):
+        for w in self.dictionary:
             word = ""
-            if prefixIn != "" and w.strip().startswith(prefixIn):
-                while True:
-                    word = prefixOut + self.make_word()
-                    if word not in result.values(): break
-            else:
-                while True:
-                    word = self.make_word()
-                    if word not in result.values(): break
-                prefixIn = w.strip()
-                prefixOut = word.strip()
+            while True:
+                word = self.make_word()
+                if word not in result.values(): break
             result[w.strip()] = word
-
         return result
 
     def __str__(self):
