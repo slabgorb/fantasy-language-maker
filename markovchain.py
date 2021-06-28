@@ -87,14 +87,25 @@ class MarkovChain(collections.defaultdict):
                         "ism", "ling", "ness", "y", \
                         "ess", "ly", "ry", \
                         "craft", "ed", "edly", "en", "ering", "ery"]
-        nnRegex = ".*(" + "|".join(nn_suffixes) + ")$"
-        nnDict = {}
+        nsRegex = ".*(" + "|".join(nn_suffixes) + ")$"
+        nsDict = {}
         word = ""
         for nn in nn_suffixes:
             while True:
                 word = self.make_word()
-                if word not in nn_suffixes: break
-            nnDict[nn] = word
+                if word not in nsDict: break
+            nsDict[nn] = word
+
+        """ prefixes used to form new nouns from nouns """
+        nn_prefixes = ["anti", "auto", "bi", "co", "counter", "dis", "ex", "hyper", "in", "in", "inter", "kilo", "mal", "mega", "mis", "mini", "mono", "neo", "out", "poly", "pseudo", "re", "semi", "sub", "super", "sur", "tele", "tri", "ultra", "under", "vice"]
+        npRegex = "^(" + "|".join(nn_prefixes) + ").*"
+        npDict = {}
+        for np in nn_prefixes:
+            while True:
+                word = self.make_word()
+                if word not in npDict: break
+            npDict[np] = word
+
         """ prefixes that result in a verb """
         verb_prefixes = ["re", "dis", "over", "un", "mis", "out", "be", "co", "de", "fore", "inter", "pre", "sub", "trans", "under"]
         vpRegex = "^(" + "|".join(verb_prefixes) + ").*"
@@ -102,8 +113,10 @@ class MarkovChain(collections.defaultdict):
         for vp in verb_prefixes:
             while True:
                 word = self.make_word()
-                if word not in nn_suffixes: break
+                if word not in vpDict: break
             vpDict[vp] = word
+
+        """ loop through dictionary words """
         for w in self.dictionary:
             s = w.strip()
             word = ""
@@ -114,23 +127,44 @@ class MarkovChain(collections.defaultdict):
 
             done = False
             """ this tries to handle suffixes, but it gets some things wrong """
-            if re.search(nnRegex, s):
+            if re.search(nsRegex, s):
                 """ found word possibly with suffix """
                 for nn in nn_suffixes:
                     if s.endswith(nn) and len(s) > len(nn):
                         baseWord = s[:len(s)-len(nn)]
-                        if baseWord in self.dictionary and nltk.pos_tag([baseWord])[0][1].startswith("NN"):
-                            if baseWord in result.keys():
-                                """ if the word without prefix is saved """
-                                result[s] = result[baseWord] + nnDict[nn]
-                                done = True
-                                break
-                            else:
-                                """ if the word without prefix is not saved """
-                                result[baseWord] = word
-                                result[s] = word + nnDict[nn]
-                                done = True
-                                break
+                        if nltk.pos_tag([baseWord])[0][1].startswith("NN"):
+                            if baseWord in self.dictionary:
+                                if baseWord in result.keys():
+                                    """ if the word without prefix is saved """
+                                    result[s] = result[baseWord] + nsDict[nn]
+                                    done = True
+                                    break
+                                else:
+                                    """ if the word without prefix is not saved """
+                                    result[baseWord] = word
+                                    result[s] = word + nsDict[nn]
+                                    done = True
+                                    break
+
+            if not done and re.search(npRegex, s) and nltk.pos_tag([s])[0][1].startswith("NN"):
+                """ it's a verb and has a verb prefix """
+                for np in nn_prefixes:
+                    if s.startswith(np):
+                        baseWord = s[len(np):]
+                        if nltk.pos_tag([baseWord])[0][1].startswith("NN"):
+                            if baseWord in self.dictionary:
+                                if baseWord in result.keys():
+                                    """ if the word without prefix is saved """
+                                    result[s] = npDict[np] + result[baseWord]
+                                    done = True
+                                    break
+                                else:
+                                    """ if the word without prefix is not saved """
+                                    result[baseWord] = word
+                                    result[s] = npDict[np] + word
+                                    done = True
+                                    break
+
             if not done and doc[0].tag_.startswith("VB") and re.search(vpRegex, s):
                 """ it's a verb and has a verb prefix """
                 for vp in verb_prefixes:
