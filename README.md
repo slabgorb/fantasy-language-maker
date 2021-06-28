@@ -39,3 +39,5 @@ Options:
 ```                        
 
 You can get additional corpora from Project Gutenberg - download the 'utf-8' version. I recommend removing the Gutenberg headers and footers before running the program on it.
+
+Limitations: I assume an english language dictionary so that I can add some advanced features that take into account word prefixes and suffixes.

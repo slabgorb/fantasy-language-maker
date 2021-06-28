@@ -57,8 +57,8 @@ class MarkovChain(collections.defaultdict):
     """ """
     def __init__(self, corpus_files, dictionary_file, lookback = 2):
         """ initializes the Markov object. """
-        df = open(dictionary_file, 'r')
-        self.dictionary = df.readlines()
+        with open(dictionary_file) as f:
+            self.dictionary = f.read().splitlines()
         self.corpus_files = corpus_files
         self.lookback = lookback
         self.chain = Chain(self.lookback)
@@ -81,8 +81,15 @@ class MarkovChain(collections.defaultdict):
         result = {}
         nlp = spacy.load("en_core_web_sm")
         """ Assuming the dictionary is English language """
+        """ suffixes potentially added to nouns - not intended as an exhaustive list """
+        nn_suffixes = ["enfolk", "hood", "ic", "inwood", "ish", "ishly", "ishness", "kin", "in", "land", "like", "lock", "ship", "wife", "wort"]
+        nnRegex = ".*(" + "|".join(nn_suffixes) + ")$"
+        nnDict = {}
+        for nn in nn_suffixes:
+            nnDict[nn] = self.make_word()
+        """ prefixes that result in a verb """
         verb_prefixes = ["re", "dis", "over", "un", "mis", "out", "be", "co", "de", "fore", "inter", "pre", "sub", "trans", "under"]
-        vpRegex = "^" + "|".join(verb_prefixes) + ".*"
+        vpRegex = "^(" + "|".join(verb_prefixes) + ").*"
         vpDict = {}
         for vp in verb_prefixes:
             vpDict[vp] = self.make_word()
@@ -93,22 +100,42 @@ class MarkovChain(collections.defaultdict):
                 word = self.make_word()
                 if word not in result.values(): break
             doc = nlp(s)
-            print(s + " is tagged " + doc[0].tag_)
             """ Unfortunately, I found spacy does not recognize all verbs correctly. """
             """ e.g. it says dwarf is a NN (noun) but elf as a PRP (personal pronoun) """
             """ and restructure is a NN (noun) instead of a VB (verb) """
-            if doc[0].tag_.startswith("VB") and re.search(vpRegex, s):
+            """ this tries to handle suffixes, but it gets some things wrong """
+            if re.search(nnRegex, s):
+                """ found word possibly with suffix """
+                for nn in nn_suffixes:
+                    if s.endswith(nn) and len(s) > len(nn):
+                        baseWord = s[:len(s)-len(nn)]
+                        baseDoc = nlp(baseWord)
+#                         print("s="+s+" nn="+nn+" baseWord="+baseWord)
+#                         print("in dictionary=" + str(baseWord in self.dictionary))
+#                         print("baseDoc[0].tag_=" + baseDoc[0].tag_)
+                        if baseWord in self.dictionary and (baseDoc[0].tag_.startswith("NN") or baseDoc[0].tag_.startswith("PRP")):
+                            if baseWord in result.keys():
+                                """ if the word without prefix is saved """
+                                result[s] = result[baseWord] + nnDict[nn]
+                            else:
+                                """ if the word without prefix is not saved """
+                                result[baseWord] = word
+                                result[s] = word + nnDict[nn]
+                        else: result[s] = word
+                        break
+            elif doc[0].tag_.startswith("VB") and re.search(vpRegex, s):
                 """ it's a verb and has a verb prefix """
                 for vp in verb_prefixes:
                     if s.startswith(vp):
                         baseWord = s[len(vp):]
-                        if baseWord in result.keys():
-                            """ if the word without prefix is saved """
-                            result[s] = vpDict[vp] + result[baseWord]
-                        else:
-                            """ if the word without prefix is not saved """
-                            result[baseWord] = word
-                            result[s] = vpDict[vp] + word
+                        if baseWord in self.dictionary:
+                            if baseWord in result.keys():
+                                """ if the word without prefix is saved """
+                                result[s] = vpDict[vp] + result[baseWord]
+                            else:
+                                """ if the word without prefix is not saved """
+                                result[baseWord] = word
+                                result[s] = vpDict[vp] + word
                         break
             else: result[s] = word
         return result
