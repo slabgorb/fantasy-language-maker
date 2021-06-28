@@ -8,6 +8,9 @@ import collections
 from optparse import OptionParser
 from unicodedata import category
 import csv
+import spacy
+import re
+# from spacy_syllables import SpacySyllables
 
 class CharList(collections.defaultdict):
     """Models the list of characters in the chain. The characters
@@ -76,12 +79,38 @@ class MarkovChain(collections.defaultdict):
         """ runs through the dictionary and makes a fantasy word for
         each entry in the 'real' dictionary """
         result = {}
+        nlp = spacy.load("en_core_web_sm")
+        """ Assuming the dictionary is English language """
+        verb_prefixes = ["re", "dis", "over", "un", "mis", "out", "be", "co", "de", "fore", "inter", "pre", "sub", "trans", "under"]
+        vpRegex = "^" + "|".join(verb_prefixes) + ".*"
+        vpDict = {}
+        for vp in verb_prefixes:
+            vpDict[vp] = self.make_word()
         for w in self.dictionary:
+            s = w.strip()
             word = ""
             while True:
                 word = self.make_word()
                 if word not in result.values(): break
-            result[w.strip()] = word
+            doc = nlp(s)
+            print(s + " is tagged " + doc[0].tag_)
+            """ Unfortunately, I found spacy does not recognize all verbs correctly. """
+            """ e.g. it says dwarf is a NN (noun) but elf as a PRP (personal pronoun) """
+            """ and restructure is a NN (noun) instead of a VB (verb) """
+            if doc[0].tag_.startswith("VB") and re.search(vpRegex, s):
+                """ it's a verb and has a verb prefix """
+                for vp in verb_prefixes:
+                    if s.startswith(vp):
+                        baseWord = s[len(vp):]
+                        if baseWord in result.keys():
+                            """ if the word without prefix is saved """
+                            result[s] = vpDict[vp] + result[baseWord]
+                        else:
+                            """ if the word without prefix is not saved """
+                            result[baseWord] = word
+                            result[s] = vpDict[vp] + word
+                        break
+            else: result[s] = word
         return result
 
     def __str__(self):

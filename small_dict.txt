@@ -241,6 +241,14 @@ drive
 drop
 dry
 during
+dwarf
+dwarfish
+dwarfishly
+dwarfishness
+dwarfism
+dwarfling
+dwarfness
+dwarfy
 each
 early
 ears
@@ -682,6 +690,7 @@ reached
 read
 ready
 really
+reappear
 reason
 received
 record
@@ -693,6 +702,7 @@ repeated
 report
 represent
 resent
+restructure
 rest
 result
 return
@@ -829,6 +839,7 @@ street
 stretched
 string
 strong
+structure
 students
 study
 subject

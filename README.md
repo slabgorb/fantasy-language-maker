@@ -6,6 +6,19 @@ Makes fantasy language glossaries based on markov chains applied to text corpuse
 Requires an installation of the Python programming language version 3
 http://www.python.org
 
+My version requires spacy https://pypi.org/project/spacy/ for nlp.
+
+To install after python is installed:
+
+```
+pip install spacy
+python -m spacy download en_core_web_sm
+```
+
+I use this to tell whether an English word is noun, verb, etc.
+
+Note: I also tried using spacy syllables to split words, but foud it doen's always work.
+
 To run:
 
 on linux/mac 
