@@ -10,6 +10,7 @@ from unicodedata import category
 import csv
 import spacy
 import re
+import nltk
 # from spacy_syllables import SpacySyllables
 
 class CharList(collections.defaultdict):
@@ -82,7 +83,10 @@ class MarkovChain(collections.defaultdict):
         nlp = spacy.load("en_core_web_sm")
         """ Assuming the dictionary is English language """
         """ suffixes potentially added to nouns - not intended as an exhaustive list """
-        nn_suffixes = ["enfolk", "hood", "ic", "inwood", "ish", "ishly", "ishness", "kin", "in", "land", "like", "lock", "ship", "wife", "wort"]
+        nn_suffixes = ["enfolk", "hood", "ic", "inwood", "ish", "ishly", "ishness", "kin", "in", "land", "like", "lock", "ship", "wife", "wort", \
+                        "ism", "ling", "ness", "y", \
+                        "ess", "ly", "ry", \
+                        "craft", "ed", "edly", "en", "ering", "ery"]
         nnRegex = ".*(" + "|".join(nn_suffixes) + ")$"
         nnDict = {}
         for nn in nn_suffixes:
@@ -100,20 +104,16 @@ class MarkovChain(collections.defaultdict):
                 word = self.make_word()
                 if word not in result.values(): break
             doc = nlp(s)
-            """ Unfortunately, I found spacy does not recognize all verbs correctly. """
-            """ e.g. it says dwarf is a NN (noun) but elf as a PRP (personal pronoun) """
-            """ and restructure is a NN (noun) instead of a VB (verb) """
+
+
+
             """ this tries to handle suffixes, but it gets some things wrong """
             if re.search(nnRegex, s):
                 """ found word possibly with suffix """
                 for nn in nn_suffixes:
                     if s.endswith(nn) and len(s) > len(nn):
                         baseWord = s[:len(s)-len(nn)]
-                        baseDoc = nlp(baseWord)
-#                         print("s="+s+" nn="+nn+" baseWord="+baseWord)
-#                         print("in dictionary=" + str(baseWord in self.dictionary))
-#                         print("baseDoc[0].tag_=" + baseDoc[0].tag_)
-                        if baseWord in self.dictionary and (baseDoc[0].tag_.startswith("NN") or baseDoc[0].tag_.startswith("PRP")):
+                        if baseWord in self.dictionary and nltk.pos_tag([baseWord])[0][1].startswith("NN"):
                             if baseWord in result.keys():
                                 """ if the word without prefix is saved """
                                 result[s] = result[baseWord] + nnDict[nn]
@@ -152,6 +152,8 @@ class MarkovChain(collections.defaultdict):
 
     def make_word(self):
         """ makes a fantasy word from a series of random characters."""
+        """ TODO: the limit is a bit of a hack - maybe make it an command-line option """
+        LIMIT=8
         word = ""
         key = [Chain.START] * self.lookback
         while True:
@@ -160,6 +162,8 @@ class MarkovChain(collections.defaultdict):
             word += char
             key += char
             key.pop(0)
+        if len(word) > LIMIT:
+            word = self.make_word()
         return word
 
 

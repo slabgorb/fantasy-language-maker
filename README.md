@@ -6,18 +6,24 @@ Makes fantasy language glossaries based on markov chains applied to text corpuse
 Requires an installation of the Python programming language version 3
 http://www.python.org
 
-My version requires spacy https://pypi.org/project/spacy/ for nlp.
+This version requires both nltk and spacy for nlp for part of speech tagging.
+In other words, to tell whether an English word is noun, verb, etc.
 
-To install after python is installed:
+I found that determining part of speech outside the context of a sentence is inexact.
+When there is ambiguity, nltk favors NN (noun) whereas spacy doesn't.
+e.g. spacy tags elf as PRP (personal pronoun) and wizard as JJ (adjective),
+nltk tags both elf and wizard as NN (noun) - which is more what I expect
+
+So, if I'm looking for/expecting a noun, I use nltk. Otherwise, I use spacy.
+
+To install these packages after python is installed:
 
 ```
-pip install spacy
-python -m spacy download en_core_web_sm
+pip3 install nltk
+python3 -m nltk.downloader all
+pip3 install spacy
+python3 -m spacy download en_core_web_sm
 ```
-
-I use this to tell whether an English word is noun, verb, etc.
-
-Note: I also tried using spacy syllables to split words, but foud it doen's always work.
 
 To run:
 
