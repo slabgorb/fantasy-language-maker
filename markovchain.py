@@ -89,14 +89,21 @@ class MarkovChain(collections.defaultdict):
                         "craft", "ed", "edly", "en", "ering", "ery"]
         nnRegex = ".*(" + "|".join(nn_suffixes) + ")$"
         nnDict = {}
+        word = ""
         for nn in nn_suffixes:
-            nnDict[nn] = self.make_word()
+            while True:
+                word = self.make_word()
+                if word not in nn_suffixes: break
+            nnDict[nn] = word
         """ prefixes that result in a verb """
         verb_prefixes = ["re", "dis", "over", "un", "mis", "out", "be", "co", "de", "fore", "inter", "pre", "sub", "trans", "under"]
         vpRegex = "^(" + "|".join(verb_prefixes) + ").*"
         vpDict = {}
         for vp in verb_prefixes:
-            vpDict[vp] = self.make_word()
+            while True:
+                word = self.make_word()
+                if word not in nn_suffixes: break
+            vpDict[vp] = word
         for w in self.dictionary:
             s = w.strip()
             word = ""
@@ -105,8 +112,7 @@ class MarkovChain(collections.defaultdict):
                 if word not in result.values(): break
             doc = nlp(s)
 
-
-
+            done = False
             """ this tries to handle suffixes, but it gets some things wrong """
             if re.search(nnRegex, s):
                 """ found word possibly with suffix """
@@ -117,13 +123,15 @@ class MarkovChain(collections.defaultdict):
                             if baseWord in result.keys():
                                 """ if the word without prefix is saved """
                                 result[s] = result[baseWord] + nnDict[nn]
+                                done = True
+                                break
                             else:
                                 """ if the word without prefix is not saved """
                                 result[baseWord] = word
                                 result[s] = word + nnDict[nn]
-                        else: result[s] = word
-                        break
-            elif doc[0].tag_.startswith("VB") and re.search(vpRegex, s):
+                                done = True
+                                break
+            if not done and doc[0].tag_.startswith("VB") and re.search(vpRegex, s):
                 """ it's a verb and has a verb prefix """
                 for vp in verb_prefixes:
                     if s.startswith(vp):
@@ -132,12 +140,15 @@ class MarkovChain(collections.defaultdict):
                             if baseWord in result.keys():
                                 """ if the word without prefix is saved """
                                 result[s] = vpDict[vp] + result[baseWord]
+                                done = True
+                                break
                             else:
                                 """ if the word without prefix is not saved """
                                 result[baseWord] = word
                                 result[s] = vpDict[vp] + word
-                        break
-            else: result[s] = word
+                                done = True
+                                break
+            if not done: result[s] = word
         return result
 
     def __str__(self):
