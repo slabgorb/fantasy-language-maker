@@ -43,4 +43,6 @@ Improvements over the original:
 * uses nlp to intelligently detect verb prefixes and noun prefixes and suffixes
 * A better dictionary file: words_alpha.txt (from https://github.com/dwyl/english-words)
 
-Limitations: I assume an english language dictionary so that I can add some advanced features that take into account word prefixes and suffixes.
+Limitations:
+* I assume an english language dictionary so that I can add some advanced features that take into account word prefixes and suffixes.
+* handling of prefixes and suffixes is not exhaustive or perfect
