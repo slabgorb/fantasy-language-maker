@@ -80,6 +80,13 @@ class MarkovChain(collections.defaultdict):
         """ runs through the dictionary and makes a fantasy word for
         each entry in the 'real' dictionary """
         result = {}
+        """
+        I found that determining part of speech outside the context of a sentence is inexact.
+        When there is ambiguity, nltk favors NN (noun) whereas spacy doesn't.
+        e.g. spacy tags elf as PRP (personal pronoun) and wizard as JJ (adjective),
+        nltk tags both elf and wizard as NN (noun) - which is more what I expect
+        So, if I'm looking for/expecting a noun, I use nltk. Otherwise, I use spacy.
+        """
         nlp = spacy.load("en_core_web_sm")
         """ Assuming the dictionary is English language """
         """ suffixes potentially added to nouns - not intended as an exhaustive list """

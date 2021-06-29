@@ -6,15 +6,7 @@ Makes fantasy language glossaries based on markov chains applied to text corpuse
 Requires an installation of the Python programming language version 3
 http://www.python.org
 
-This version requires both nltk and spacy for nlp for part of speech tagging.
-In other words, to tell whether an English word is noun, verb, etc.
-
-I found that determining part of speech outside the context of a sentence is inexact.
-When there is ambiguity, nltk favors NN (noun) whereas spacy doesn't.
-e.g. spacy tags elf as PRP (personal pronoun) and wizard as JJ (adjective),
-nltk tags both elf and wizard as NN (noun) - which is more what I expect
-
-So, if I'm looking for/expecting a noun, I use nltk. Otherwise, I use spacy.
+This version requires both nltk and spacy for natural language processing.
 
 To install these packages after python is installed:
 
@@ -45,5 +37,10 @@ Options:
 ```                        
 
 You can get additional corpora from Project Gutenberg - download the 'utf-8' version. I recommend removing the Gutenberg headers and footers before running the program on it.
+
+Improvements over the original:
+* related words like "elf" and "elfish" should render words that look like they are related
+* uses nlp to intelligently detect verb prefixes and noun prefixes and suffixes
+* A better dictionary file: words_alpha.txt (from https://github.com/dwyl/english-words)
 
 Limitations: I assume an english language dictionary so that I can add some advanced features that take into account word prefixes and suffixes.
