@@ -1020,6 +1020,8 @@ wall
 want
 war
 warhorse
+warlock
+warlocks
 warm
 was
 wash
@@ -1072,6 +1074,7 @@ witchedly
 witchen
 witchering
 witchery
+witches
 witchet
 witchetty
 witchhood
@@ -1098,6 +1101,7 @@ wizardism
 wizardlike
 wizardly
 wizardry
+wizards
 wizardship
 woman
 women

@@ -10,6 +10,7 @@ from unicodedata import category
 import csv
 import re
 import nltk
+from pattern.en import pluralize, singularize
 
 class CharList(collections.defaultdict):
     """Models the list of characters in the chain. The characters
@@ -54,11 +55,13 @@ class Chain(collections.defaultdict):
 
 class MarkovChain(collections.defaultdict):
     """ """
-    def __init__(self, corpus_files, append_to, dictionary_file, lookback = 2):
+    def __init__(self, corpus_files, append_to, dictionary_file, seed, lookback = 2):
         """ initializes the Markov object. """
         self.append_to = append_to
         with open(dictionary_file) as f:
             self.dictionary = f.read().splitlines()
+        if seed:
+            random.seed(seed)
         self.corpus_files = corpus_files
         self.lookback = lookback
         self.chain = Chain(self.lookback)
@@ -104,6 +107,12 @@ class MarkovChain(collections.defaultdict):
                 word = self.make_word()
                 if word not in nsDict: break
             nsDict[nn] = word
+
+        while True:
+            word = self.make_word()
+            if word not in nsDict: break
+        """ make this configurable """
+        plural_suffix = "i"
 
         """ prefixes used to form new nouns from nouns """
         nn_prefixes = ["anti", "auto", "bi", "co", "counter", "dis", "ex", "hyper", "in", "in", "inter", "kilo", "mal", "mega", "mis", "mini", "mono", "neo", "out", "poly", "pseudo", "re", "semi", "sub", "super", "sur", "tele", "tri", "ultra", "under", "vice"]
@@ -173,6 +182,17 @@ class MarkovChain(collections.defaultdict):
                                     result[s] = npDict[np] + word
                                     done = True
                                     break
+
+            if not done and nltk.pos_tag([s])[0][1].startswith("NN"):
+                singular = singularize(s)
+                if (s == pluralize(singular)):
+                    if (singular in result.keys()):
+                        result[s] = result[singular] + plural_suffix
+                        done = True
+                    else:
+                        result[singular] = word
+                        result[s] = word + plural_suffix
+                        done = True
 
             if not done and nltk.pos_tag([w])[0][1].startswith("VB") and re.search(vpRegex, s):
                 """ it's a verb and has a verb prefix """
