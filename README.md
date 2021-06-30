@@ -57,7 +57,7 @@ To keep track of the random seed, I let the shell create the seed and name the f
 seed=$RANDOM; ./markov corpus/english.txt -s $seed | tee english_corpus_$seed.txt | less
 ```
 
-When I like the result with the smaller file, then I can follow up with a larger dictioneray like this.
+When I like the result with the smaller file, then I can follow up with a larger dictionary.
 
 You can get additional corpora from Project Gutenberg - download the 'utf-8' version. I recommend removing the Gutenberg headers and footers before running the program on it.
 
