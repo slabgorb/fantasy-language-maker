@@ -8,8 +8,10 @@ usage = "markov [options] corpus1 corpus2 ..."
 parser = OptionParser()
 parser.add_option("-l", "--lookback", dest="lookback",
                   help="number of characters to look back in the chain", metavar="LOOKBACK", default=2)
+parser.add_option("-a", "--appendto", dest="append_to",
+                  help="file to append to", metavar="APPEND_TO")
 parser.add_option("-d", "--dictionary", dest="dictionary",
-                  help="dictionary file to use", metavar="DICTIONARY", default='small_dict.txt')
+                  help="dictionary file to use", metavar="DICTIONARY", default='dictionary_small.txt')
 parser.add_option("-n", "--name", dest="name",
                   help="Name of the language, if this is set, the output will go into a file")
 
@@ -22,4 +24,4 @@ if (options.name):
   target.write(str(markovchain.MarkovChain(args, options.dictionary, int(options.lookback))))
 
 else:
-  print(markovchain.MarkovChain(args, options.dictionary, int(options.lookback)))
+  print(markovchain.MarkovChain(args, options.append_to, options.dictionary, int(options.lookback)))

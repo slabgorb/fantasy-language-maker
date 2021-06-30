@@ -8,10 +8,8 @@ import collections
 from optparse import OptionParser
 from unicodedata import category
 import csv
-import spacy
 import re
 import nltk
-# from spacy_syllables import SpacySyllables
 
 class CharList(collections.defaultdict):
     """Models the list of characters in the chain. The characters
@@ -56,8 +54,9 @@ class Chain(collections.defaultdict):
 
 class MarkovChain(collections.defaultdict):
     """ """
-    def __init__(self, corpus_files, dictionary_file, lookback = 2):
+    def __init__(self, corpus_files, append_to, dictionary_file, lookback = 2):
         """ initializes the Markov object. """
+        self.append_to = append_to
         with open(dictionary_file) as f:
             self.dictionary = f.read().splitlines()
         self.corpus_files = corpus_files
@@ -80,14 +79,17 @@ class MarkovChain(collections.defaultdict):
         """ runs through the dictionary and makes a fantasy word for
         each entry in the 'real' dictionary """
         result = {}
+        if self.append_to:
+            f = open(self.append_to, 'r')
+            csvfile = csv.reader(f)
+            data = list(csvfile)
+            for row in data:
+                if (len(row) == 2):
+                    result[row[0]] = row[1]
+
         """
         I found that determining part of speech outside the context of a sentence is inexact.
-        When there is ambiguity, nltk favors NN (noun) whereas spacy doesn't.
-        e.g. spacy tags elf as PRP (personal pronoun) and wizard as JJ (adjective),
-        nltk tags both elf and wizard as NN (noun) - which is more what I expect
-        So, if I'm looking for/expecting a noun, I use nltk. Otherwise, I use spacy.
         """
-        nlp = spacy.load("en_core_web_sm")
         """ Assuming the dictionary is English language """
         """ suffixes potentially added to nouns - not intended as an exhaustive list """
         nn_suffixes = ["enfolk", "hood", "ic", "inwood", "ish", "ishly", "ishness", "kin", "in", "land", "like", "lock", "ship", "wife", "wort", \
@@ -125,12 +127,12 @@ class MarkovChain(collections.defaultdict):
 
         """ loop through dictionary words """
         for w in self.dictionary:
+            if w in result.keys(): continue
             s = w.strip()
             word = ""
             while True:
                 word = self.make_word()
                 if word not in result.values(): break
-            doc = nlp(s)
 
             done = False
             """ this tries to handle suffixes, but it gets some things wrong """
@@ -172,7 +174,7 @@ class MarkovChain(collections.defaultdict):
                                     done = True
                                     break
 
-            if not done and doc[0].tag_.startswith("VB") and re.search(vpRegex, s):
+            if not done and nltk.pos_tag([w])[0][1].startswith("VB") and re.search(vpRegex, s):
                 """ it's a verb and has a verb prefix """
                 for vp in verb_prefixes:
                     if s.startswith(vp):

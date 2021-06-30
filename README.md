@@ -6,15 +6,13 @@ Makes fantasy language glossaries based on markov chains applied to text corpuse
 Requires an installation of the Python programming language version 3
 http://www.python.org
 
-This version requires both nltk and spacy for natural language processing.
+This version requires both nltk for natural language processing.
 
-To install these packages after python is installed:
+To install nltk after python is installed:
 
 ```
 pip3 install nltk
 python3 -m nltk.downloader all
-pip3 install spacy
-python3 -m spacy download en_core_web_sm
 ```
 
 To run:
@@ -32,8 +30,13 @@ Options:
   -h, --help            show this help message and exit
   -l LOOKBACK, --lookback=LOOKBACK
                         number of characters to look back in the chain
+  -a APPEND_TO, --appendto=APPEND_TO
+                        file to append to
   -d DICTIONARY, --dictionary=DICTIONARY
                         dictionary file to use
+  -n NAME, --name=NAME  Name of the language, if this is set, the output will
+                        go into a file
+
 ```                        
 
 You can get additional corpora from Project Gutenberg - download the 'utf-8' version. I recommend removing the Gutenberg headers and footers before running the program on it.
@@ -41,6 +44,7 @@ You can get additional corpora from Project Gutenberg - download the 'utf-8' ver
 Improvements over the original:
 * related words like "elf" and "elfish" should render words that look like they are related
 * uses nlp to intelligently detect verb prefixes and noun prefixes and suffixes
+* option to append to already-generated list of words so you can start out with the small dictionary and iteratively add onto it with larger or custom dictionaries without overwriting what you already had
 * Additions to the small dictionary
 * A medium-sized dictionary (from http://www.mieliestronk.com/wordlist.html)
 * A very larger dictionary (from https://github.com/dwyl/english-words)
@@ -50,6 +54,5 @@ Limitations:
 * handling of prefixes and suffixes is not exhaustive or perfect
 
 TODO:
-* read stdin for already-generated words so you can start out with the small dictionary and iteratively add onto it with larger or custom dictionaries without overwriting what you already had
 * improve prefix and suffix handling, maybe make the prefixesa nd suffixes come from a file so they are customizable
 * improve performance
