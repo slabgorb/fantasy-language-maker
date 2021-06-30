@@ -41,8 +41,15 @@ You can get additional corpora from Project Gutenberg - download the 'utf-8' ver
 Improvements over the original:
 * related words like "elf" and "elfish" should render words that look like they are related
 * uses nlp to intelligently detect verb prefixes and noun prefixes and suffixes
-* A better dictionary file: words_alpha.txt (from https://github.com/dwyl/english-words)
+* Additions to the small dictionary
+* A medium-sized dictionary (from http://www.mieliestronk.com/wordlist.html)
+* A very larger dictionary (from https://github.com/dwyl/english-words)
 
 Limitations:
 * I assume an english language dictionary so that I can add some advanced features that take into account word prefixes and suffixes.
 * handling of prefixes and suffixes is not exhaustive or perfect
+
+TODO:
+* read stdin for already-generated words so you can start out with the small dictionary and iteratively add onto it with larger or custom dictionaries without overwriting what you already had
+* improve prefix and suffix handling, maybe make the prefixesa nd suffixes come from a file so they are customizable
+* improve performance
