@@ -111,8 +111,6 @@ class MarkovChain(collections.defaultdict):
         while True:
             word = self.make_word()
             if word not in nsDict: break
-        """ make this configurable """
-        plural_suffix = "i"
 
         """ prefixes used to form new nouns from nouns """
         nn_prefixes = ["anti", "auto", "bi", "co", "counter", "dis", "ex", "hyper", "in", "in", "inter", "kilo", "mal", "mega", "mis", "mini", "mono", "neo", "out", "poly", "pseudo", "re", "semi", "sub", "super", "sur", "tele", "tri", "ultra", "under", "vice"]
@@ -187,11 +185,11 @@ class MarkovChain(collections.defaultdict):
                 singular = singularize(s)
                 if (s == pluralize(singular)):
                     if (singular in result.keys()):
-                        result[s] = result[singular] + plural_suffix
+                        result[s] = pluralize(result[singular])
                         done = True
                     else:
                         result[singular] = word
-                        result[s] = word + plural_suffix
+                        result[s] = pluralize(word)
                         done = True
 
             if not done and nltk.pos_tag([w])[0][1].startswith("VB") and re.search(vpRegex, s):
