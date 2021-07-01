@@ -73,6 +73,7 @@ Improvements over the original:
 Limitations:
 * I assume an english language dictionary so that I can add some advanced features that take into account word prefixes and suffixes.
 * handling of prefixes and suffixes is not exhaustive or perfect
+* uses English pluralization rules
 
 TODO:
 * save suffixes and prefixes so I get the same one
